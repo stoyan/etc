@@ -102,7 +102,7 @@
     };
 
     var script = document.createElement('script');
-    script.src = 'http://yui.yahooapis.com/combo?2.6.0/build/utilities/utilities.js&2.6.0/build/container/container_core-min.js&2.6.0/build/json/json-min.js';
+    script.src = 'http://yui.yahooapis.com/combo?2.7.0/build/yuiloader-dom-event/yuiloader-dom-event.js';
 
     if(script.addEventListener){
         script.addEventListener("load", start, false);
