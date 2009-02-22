@@ -21,7 +21,10 @@ if (intval(@$_GET['x'])) {
 }
 
 // name of the mask file
-$file = $cachedir . $x . '.png';
+$file = $cachedir . $x;
+$file.= (@$_GET['type'] === 'h') ? 'h' : '';
+$file.= '.png';
+
 
 // if in the cache, serve
 if (file_exists($file) && $cache_on) {
@@ -35,23 +38,37 @@ if (file_exists($file) && $cache_on) {
 $xplus = 3 * $x;
 
 // new GD image
-$im = @imagecreatetruecolor($xplus, $xplus)
+$xsize = $xplus;
+if (@$_GET['type'] === 'h') {
+    $xsize = 1;
+    $xsize = 3 * $xsize;
+}
+
+$im = @imagecreatetruecolor($xsize, $xplus)
        or die('Cannot Initialize new GD image stream');
 imagealphablending($im, false);
 imagesavealpha($im, true);
 // background
 $back = imagecolorallocatealpha($im, 255, 255, 255, 127);
-imagefilledrectangle($im, 0, 0, $xplus, $xplus, $back);
+imagefilledrectangle($im, 0, 0, $xsize, $xplus, $back);
 // forecolor
 $color = imagecolorallocatealpha($im, 255, 255, 255, 90);
-imagefilledellipse($im, $xplus / 2, 0, 1.7 * $xplus, $xplus, $color);
+
+switch(@$_GET['type']) {
+    case 'h':
+        imagefilledrectangle($im, 0, 0, $xsize, $xplus/2, $color);
+        break;
+    default:
+        imagefilledellipse($im, $xplus / 2, 0, 1.7 * $xplus, $xplus, $color);
+}
 imagepng($im, $file);
 imagedestroy($im);
 
 // a bunch of command-line tools to resize, PNG8-convert and optimize
 $cmd = array();
 // imagemagick resize
-$cmd[] = "convert $file -thumbnail $xx$x $file.png";
+$n = $xsize / 3;
+$cmd[] = "convert $file -thumbnail " . $n . "x" . $x . " $file.png";
 // crush the image
 $cmd[] = "~/bin/pngcrush -rem alla $file.png $file";
 // convert to PNG8 
