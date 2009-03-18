@@ -38,6 +38,8 @@
         'dir/image.png',
         '/dir/image.png',
         'dir/../image.png',
+        './image.png',
+        './dir/image.png'
     ];
 
     var i, j, td, tr, t = document.getElementsByTagName('table')[0];
@@ -87,6 +89,9 @@
             hparts.pop(); // stip one dir off the host for each /../
           }
           delete lparts[i];
+        }
+        if(lparts[i] === '.') {
+            delete lparts[i];
         }
       }
 
