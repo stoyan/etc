@@ -2,7 +2,7 @@
 /**
  * Script that generates a mask image
  * to be used as an overlay
- * to get iPnone/iPod-like glossy icons
+ * to get iPnone/iPod-like glossy icons among other things
  *
  * @author Stoyan Stefanov <ssttoo@gmail.com>
  * @link http://phonydev.com/
@@ -23,13 +23,15 @@ if (intval(@$_GET['x'])) {
 // name of the mask file
 $file = $cachedir . $x;
 $file.= (@$_GET['type'] === 'h') ? 'h' : '';
+$file.= (@$_GET['type'] === 'stripe') ? 'stripe' : '';
+$file.= (@$_GET['type'] === 'gradient' ? 'gradient' : '') . (@$_GET['flip'] ? 'flip' : '');
 $file.= '.png';
 
 
 // if in the cache, serve
 if (file_exists($file) && $cache_on) {
-    echo file_get_contents($file);
-    die();
+    //echo file_get_contents($file);
+    //die();
 }
 
 
@@ -41,8 +43,17 @@ $xplus = 3 * $x;
 $xsize = $xplus;
 if (@$_GET['type'] === 'h') {
     $xsize = 1;
-    $xsize = 3 * $xsize;
+    $xplus = $x;
 }
+if (@$_GET['type'] === 'gradient') {
+    $xplus = $x = 127;
+    $xsize = 1;
+}
+if (@$_GET['type'] === 'stripe') {
+    $x = $xsize = $xplus = 7;    
+}
+
+
 
 $im = @imagecreatetruecolor($xsize, $xplus)
        or die('Cannot Initialize new GD image stream');
@@ -58,6 +69,19 @@ switch(@$_GET['type']) {
     case 'h':
         imagefilledrectangle($im, 0, 0, $xsize, $xplus/2, $color);
         break;
+    case 'stripe':
+        imagefilledrectangle($im, 0, 0, 0, 0, $color);
+        imageline($im, $xsize, 0, 0, $xsize, $color);
+        imageline($im, 6, 0, 0, 6, $color);
+        imageline($im, 5, 0, 0, 5, $color);
+        imagefilledrectangle($im, $xsize, $xsize-1, $xsize-1, $xsize, $color);
+        break;
+    case 'gradient':
+        for($i = 0; $i < $x; $i++) {
+            $trns = (empty($_GET['flip'])) ? $i : 127 - $i;
+            imageline($im, 0, $i, $x, $i, imagecolorallocatealpha($im, 255, 255, 255, $trns));
+        }
+        break;
     default:
         imagefilledellipse($im, $xplus / 2, 0, 1.7 * $xplus, $xplus, $color);
 }
@@ -66,13 +90,19 @@ imagedestroy($im);
 
 // a bunch of command-line tools to resize, PNG8-convert and optimize
 $cmd = array();
+$path = '~/bin/';
+$path = '';
 // imagemagick resize
 $n = $xsize / 3;
-$cmd[] = "convert $file -thumbnail " . $n . "x" . $x . " $file.png";
+if (empty($_GET['type'])) {
+    $cmd[] = "convert $file -thumbnail " . $n . "x" . $x . " $file.png";
+} else {
+    $cmd[] = "cp $file $file.png";
+}
 // crush the image
-$cmd[] = "~/bin/pngcrush -rem alla $file.png $file";
+$cmd[] = $path . "pngcrush -rem alla $file.png $file";
 // convert to PNG8 
-$cmd[] = "~/bin/pngquant 256 " . $file;
+$cmd[] = $path . "pngquant 256 " . $file;
 // cleanup
 $cmd[] = "mv " . str_replace('.png', '-fs8.png', $file) . " $file";
 $cmd[] = "rm -f $file.png";
