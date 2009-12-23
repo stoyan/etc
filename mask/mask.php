@@ -30,8 +30,8 @@ $file.= '.png';
 
 // if in the cache, serve
 if (file_exists($file) && $cache_on) {
-    //echo file_get_contents($file);
-    //die();
+    echo file_get_contents($file);
+    die();
 }
 
 
