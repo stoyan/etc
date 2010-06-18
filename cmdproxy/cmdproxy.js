@@ -33,8 +33,7 @@ if (!args[0]) {
 // program to run
 program = args[0];
 // arguments to pass to the program
-args = args.slice(1).join(' ');
-
+args = '"' + args.slice(1).join('" "') + '"';
 
 // process setup
 psinfo = new ProcessStartInfo();
