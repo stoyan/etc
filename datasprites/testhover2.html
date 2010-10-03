@@ -1,0 +1,41 @@
+<head>
+<link rel="stylesheet" type="text/css" href="datasprites2.php" />
+<style type="text/css">
+body{font-family: Arial;}
+li {background-position:3px center;background-repeat:no-repeat;border:1px solid #ddd;height:30px;line-height:30px;list-style:none;list-style-type:none;padding-left:30px;width:200px; cursor:pointer; margin-bottom: 5px;}
+li:hover {background-color: #eee;}
+</style>
+</head>
+<body>
+<ul>
+  <li class="icon-aol">AOL</li>
+  <li class="icon-deal">Deal</li>  
+  <li class="icon-games">Games</li>
+  <li class="icon-gmail">GMail</li>
+  <li class="icon-horoscopes">Horoscopes</li>
+  <li class="icon-shop">Shop</li>
+  <li class="icon-travel">Travel</li>
+</ul>
+
+<script>
+document.getElementsByTagName('ul')[0].onmouseover = function(e) {
+  e = e || window.event;
+  var t = e.target || e.srcElement;
+  var el = t.nodeName || e.tagName;
+  if (el === "LI") {
+    t.old = t.className;
+    t.className = "icon-horoscopes";
+  }
+};
+
+document.getElementsByTagName('ul')[0].onmouseout = function(e) {
+  e = e || window.event;
+  var t = e.target || e.srcElement;
+  if (t.old) {
+    t.className = t.old;
+  }
+};
+
+</script>
+
+</body>    
