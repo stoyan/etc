@@ -93,9 +93,6 @@ var CSSEX = (function () {
     function isset(v) {
         return typeof v !== 'undefined';
     }
-    function hasOwn(o, k) {
-        return Object.protoype.hasOwnProperty.apply(o, k);
-    }
     function getConf() {
         return {
             char: walker.chnum,
