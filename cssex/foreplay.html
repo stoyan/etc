@@ -54,9 +54,13 @@ function gogo() {
         tokens = CSSEX.lex(source);
         took =  new Date() - start;
         stuff = "took: " + took + 'ms' + stuff;
-        console.log(tokens);        
+        if (console) {
+            console.log(tokens);
+        }
     } catch (e) {
-        console.dir(e);
+        if (console) {
+            console.dir(e);
+        }
     }
 
     srcout = CSSEX.toSource(tokens);
