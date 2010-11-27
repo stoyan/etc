@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>SeX - scanner/lexer</title>
+	<style>
+	.identifier {color: blue;}
+	.string {color: green;}
+	.comment {color: orange;}
+	.match {color: purple;}
+	.operator {color: red;}
+	.white {border: 1px solid #eee; color: #eee;}
+	.number {color: brown;}
+	</style>
+</head>
+<body>
+<p>pull me some CSS from CSSZenGarden.com
+   <select id="sel"><option>random</option></select>
+   <button id="pull">pull 'n go</button>
+</p>
+<textarea id="source" style="width:100%;" rows=10>@charset 'UTF-8';
+	a[href^="dude"]{}
+     #id .class9-twoo { 
+        _background-position: -12.3px;
+	    -moz-color :#fff;
+	    wi\dth: 20.0.px;
+	    height: .2px;
+	    font: 1/2;
+	}
+	a > b {
+	    border: none 
+	}
+	/* this is it */
+
+</textarea>
+<button id="gogo">go</button>
+<pre id="stuff"></pre>
+
+<script src="sex.js"></script>
+<script>
+/*jslint devel: true*/
+/*global CSSEX: true, window: true*/
+function gogo() {
+    var source = document.getElementById('source').value,
+        tokens = [], i, stuff = "", srcout,
+        origin, result, len,
+        start, took,
+        classname, t, val;
+
+    try {
+        start = new Date();
+        tokens = CSSEX.lex(source);
+        took =  new Date() - start;
+        stuff = "took: " + took + 'ms' + stuff;
+        console.log(tokens);        
+    } catch (e) {
+        console.dir(e);
+    }
+
+    srcout = CSSEX.toSource(tokens);
+
+    stuff += '<hr>source reconstructed from tokens:<hr>' + srcout;
+    
+    if (srcout !== source) {
+        alert("OMG, didn't reconstruct the source properly");
+        stuff += "<hr>offending lines<hr>";
+        origin = source.replace(/\r\n/g, '\n')
+                       .replace(/\r/g, '\n')
+                       .split('\n');
+        result = srcout.replace(/\r\n/g, '\n')
+                       .replace(/\r/g, '\n')
+                       .split('\n');
+        len = origin.length;
+        if (len !== result.length) {
+            stuff += 'not matching the number of lines<hr>';
+        }
+        for (i = 0; i < len; i += 1) {
+            if (origin[i] !== result[i]) {
+                stuff += 'in: <hr>' + origin[i] + '<hr>';
+                stuff += 'out:<hr>' + result[i] + '<hr>';
+            }
+        }
+        
+    }
+    
+    // hilite
+    stuff += '<hr>highlighted:<hr>';
+    i = 0;
+    len = tokens.length;
+    classname = '';
+
+    for (; i < len; i += 1) {
+        t = tokens[i];
+        if (t.type === 'line') {
+            stuff += '\n';
+        } else {
+            classname = (t.type.length === 1) ? 'operator' : t.type;
+            val = t.value;
+            if (t.type === 'white') {
+                val = val.replace(/ /g, '.').replace(/\t/g, 'TABZ');
+            }
+            stuff += '<span class="' + classname + '">' + val + '<\/span>';
+        }
+    }
+    
+    stuff += '<hr>tokens: (full dump in console.log)<hr>';
+    for (i = 0; i < tokens.length; i += 1) {
+        stuff += '"' + tokens[i].type + '" : "' + tokens[i].value + '"\n';
+    }
+        
+    document.getElementById('stuff').innerHTML = stuff;
+}
+
+
+
+
+document.getElementById('gogo').onclick = gogo;
+
+window.onload = function () {
+    var i = 1,
+        opts = '', file;
+    for (; i <= 213; i += 1) {
+        file = (i < 10) ? '00' + i : ((i < 100) ? '0' + i : i);
+        opts += '<option value="' + file + '">' + file + '.css<\/option>';
+    }
+    document.getElementById('sel').innerHTML += opts;
+    
+};
+
+document.getElementById('pull').onclick = function () {
+    var xhr = new XMLHttpRequest(),
+        sel = document.getElementById('sel').value,
+        file = sel === 'random' ? Math.ceil(100 + Math.random() * 100) : sel,
+        url = "csszen/" + file + ".css";
+    
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById('source').innerHTML = xhr.responseText;
+            gogo();
+        }
+    };
+    xhr.send(null);
+};
+
+</script>
+
+</body>
+</html>
