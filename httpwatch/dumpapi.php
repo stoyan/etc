@@ -15,6 +15,14 @@
 
 include "HTTPWatch.php";
 
+// output - JS or PHP
+$output = 'php';
+if (!empty($argv[1])) {
+  $jsmaybe = trim($argv[1], '-');
+  if ($jsmaybe === 'js') {
+    $output = 'js';
+  }
+}
 
 function dumpAPI($classes, $ovals, $cvals) {
   ob_start();
@@ -131,10 +139,6 @@ $class_values = array(
 $api = dumpAPI($classes, $object_values, $class_values);
 $http->done();
 
-echo '<?php $api = ';
-var_export($api);
-echo ';';
-
 sleep(2);
 
 // Test for properties that are only in the paid version
@@ -165,7 +169,18 @@ foreach ($these as $class => $obj) {
 
 $http->done();
 
+if ($output === 'js') {
+  echo "var httpwatchapi = {};";
+  echo "\nhttpwatchapi.api = " . json_encode($api);
+  echo "\nhttpwatchapi.paidproperties = " . json_encode($paidproperties);
+  die();
+}
+echo '<?php $api = ';
+var_export($api);
+echo ';';
+
 echo "\n", '$paidproperties = ';
 var_export($paidproperties);
 echo ';?>';
+
 ?>

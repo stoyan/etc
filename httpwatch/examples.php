@@ -29,6 +29,7 @@ echo "in: {$sum->BytesReceived}, out: {$sum->BytesSent}";
 
 
 // 4.
+
 $ie = new HTTPWatch();
 $ie->go('http://google.com/');
 $sum = $ie->getSummary();
@@ -50,6 +51,9 @@ $ie->done();
 $ff->done();
 
 
-
-//$http->done();
-
+/*
+$http = new HTTPWatch();
+$http->go("http://givepngachance.com");
+print_r($http->getEntries());
+$http->done();
+*/
