@@ -120,11 +120,12 @@ class DataSprites {
     }
 }
 
+/*
 // test
 $myfiles = array('aol.png', 'deal.png', 'games.png', 'gmail.png', 'horoscopes.png', 'shop.png', 'travel.png');
 $ds = new DataSprites();
 $ds->files = $myfiles;
 $ds->sendHeaders();
 echo $ds->getData();
-
+*/
 ?>
