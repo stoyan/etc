@@ -88,7 +88,7 @@ class DataSprites {
         ob_start("ob_gzhandler");
         
         header('Vary: Accept-Encoding');
-        header('Content-Type: text/css');
+        header('Content-Type: message/rfc822');
     }
 
 
